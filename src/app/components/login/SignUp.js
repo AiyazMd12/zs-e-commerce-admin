@@ -1,9 +1,11 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, Checkbox, Button } from "antd";
 import { signupRequest } from "../../../redux/action/authActions";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import SignUpOtp from "./SignUpOtp";
 const SignUp = (props) => {
-    const {handleRegister} =props;
+  const auth = useSelector((state)=>state?.auth)
+  console.log(auth,"auth")
   const dispatch = useDispatch();
 
   const onFinish = async (values) => {
@@ -14,37 +16,14 @@ const SignUp = (props) => {
       isAdmin : true
   }
   dispatch(signupRequest(payload));
-    // const formData = new FormData();
-    // formData.append('video', values.video);
-    // try {
-    //   await axios.post('https://zs-e-commerce-backend.onrender.com/v1/api/uploadVideo', formData, {
-    //     headers: { 'Content-Type': 'multipart/form-data' },
-    //   });
-    //   alert('Video uploaded successfully!');
-    //   resetForm();
-    // } catch (error) {
-    //   console.log('Upload failed:', error);
-    //   alert('Upload failed!');
-    // } finally {
-    //   setSubmitting(false);
-    // }
+
   };
 
-
-  // const onFinish = (values) => {
-    // let payload = {
-    //     name:values?.name,
-    //     email:values?.email,
-    //     phone:values?.phone
-    // }
-  //   dispatch(signupRequest(payload));
-  // };
-
 const  handleRedirection = ()=> {
- handleRegister(false)
+ props?.handleRegister(false)
 }
 
-  return (
+  return (auth?.user?.data?._id ? <SignUpOtp />  :
     <Form
       layout="vertical"
       name="normal_login"
@@ -121,9 +100,9 @@ const  handleRedirection = ()=> {
         </Button>
       </Form.Item>
       <p>or <span onClick={()=>handleRedirection()}>Already Have Account Login</span></p>
-    </Form>
+    </Form>)
     // </Loading>
-  );
+  
 };
 
 export default SignUp;

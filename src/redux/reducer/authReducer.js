@@ -5,13 +5,19 @@ import {
     LOGIN_FAILURE,
     LOGOUT,
     CHECK_AUTH,
-  } from '../action/authActions';
+    SIGNUP_OTP_SUCCESS,
+    SIGNUP_OTP_FAILURE,
+    LOGIN_OTP_SUCCESS,
+    LOGIN_OTP_FAILURE
+    } from '../action/authActions';
   
   const initialState = {
     user: null, // { id, email, name }
     token: null, // JWT token
     isAuthenticated: false,
     error: null,
+    userOtpVerify:null,
+    isLoading: false,
   };
   
   const authReducer = (state = initialState, action) => {
@@ -27,19 +33,30 @@ import {
           ...state,
           error: action.payload,
         };
+        case SIGNUP_OTP_SUCCESS:
+          return {
+            ...state,
+            userOtpVerify: action.payload,
+            error: null,
+          };
+        case SIGNUP_OTP_FAILURE:
+          return {
+            ...state,
+            error: action.payload,
+          };
       case LOGIN_SUCCESS:
-        localStorage.setItem('token', action.payload.token); // Store token
         return {
           ...state,
-          user: action.payload.user,
-          token: action.payload.token,
-          isAuthenticated: true,
+          user: action.payload,
           error: null,
+          isLoading: true,
+          
         };
       case LOGIN_FAILURE:
         return {
           ...state,
           error: action.payload,
+          isLoading: false,
         };
       case LOGOUT:
         localStorage.removeItem('token'); // Clear token
@@ -49,8 +66,28 @@ import {
           token: null,
           isAuthenticated: false,
           error: null,
+          isLoading: false,
         };
-      case CHECK_AUTH:
+        case LOGIN_OTP_SUCCESS:
+          localStorage.setItem('token', action.payload.token); // Store token
+          return {
+            ...state,
+          user: action.payload.user,
+          token: action.payload.token,
+          isAuthenticated: true,
+          error: null,
+          };
+        case LOGIN_OTP_FAILURE:
+          localStorage.removeItem('token'); // Clear token
+          return {
+            ...state,
+          user: null,
+          token: null,
+          isAuthenticated: false,
+            error: action.payload,
+          };
+      
+        case CHECK_AUTH:
         const token = localStorage.getItem('token');
         return {
           ...state,

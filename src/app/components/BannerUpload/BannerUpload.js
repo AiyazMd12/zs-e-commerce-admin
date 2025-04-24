@@ -3,23 +3,12 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from "axios"
 const BannerUpload = () => {
-  // Validation schema using Yup
-  // const validationSchema = Yup.object({
-  //   video: Yup.mixed()
-  //     .required('A video file is required')
-  //     // .test('fileSize', 'File size too large (max 100MB)', (value) => {
-  //     //   return value && value.size <= 10 * 1024 * 1024; // 10MB limit
-  //     // })
-  //     .test('fileType', 'Unsupported file type', (value) => {
-  //       return value && ['video/mp4', 'video/mov', 'video/avi'].includes(value.type);
-  //     }),
-  // });
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     const formData = new FormData();
     formData.append('video', values.video);
     try {
-      await axios.post('https://zs-e-commerce-backend.onrender.com/v1/api/uploadVideo', formData, {
+      await axios.post('/v1/api/uploadVideo', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Video uploaded successfully!');

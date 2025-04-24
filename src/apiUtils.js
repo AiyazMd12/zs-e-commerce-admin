@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 const crypto = require("crypto");
 
 export default endpoint = axios.create({
-    baseURL: "https://zs-e-commerce-backend.onrender.com/",
-    withCredentials: true,
+    // baseURL: "https://zs-e-commerce-backend.onrender.com/",
+    baseURL: "http:localhost:8000/",
+      withCredentials: true,
   });

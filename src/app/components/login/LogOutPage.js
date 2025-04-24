@@ -1,11 +1,14 @@
-import React from 'react'
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
+ import  { logout } from "../../../redux/action/authActions";
 
 const LogOutPage = () => {
-  return (
-    <div>
-      Logout
-    </div>
-  )
-}
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(logout());
+  }, [dispatch]);
+  return <Navigate to="/login" replace />;
+};
 
-export default LogOutPage
+export default LogOutPage;

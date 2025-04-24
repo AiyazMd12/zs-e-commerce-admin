@@ -1,9 +1,12 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Form,Input, Checkbox, Button } from 'antd';
 import {loginRequest} from "../../../redux/action/authActions"
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import LoginOtp from "./LoginOtp"
 const LoginPage = (props) => {
-  const {handleRegister} =props;
+  // const {handleRegister} =props;
+  const auth = useSelector((state)=>state?.auth)
+    console.log(auth,"auth")
   const dispatch = useDispatch();
   const onFinish = (values) => {
     dispatch(loginRequest({ loginData: values }));
@@ -11,15 +14,15 @@ const LoginPage = (props) => {
 
   const  handleRedirection = ()=> {
     console.log("Hello please login")
-    handleRegister(true)
+    props?.handleRegister(true)
    }
-    return (
+    return (auth?.user?.data?._id ? <LoginOtp />  :
         <Form
           layout="vertical"
           name="normal_login"
           className="login-form"
           initialValues={{
-            remember: true,
+            email: "",
           }}
           onFinish={onFinish}
         >
@@ -43,7 +46,7 @@ const LoginPage = (props) => {
           size="large"
         />
       </Form.Item>
-      <Form.Item
+      {/* <Form.Item
         label={'Password'}
         name="password"
         rules={[
@@ -57,16 +60,16 @@ const LoginPage = (props) => {
           placeholder={'admin123'}
           size="large"
         />
-      </Form.Item>
+      </Form.Item> */}
 
-      <Form.Item>
+      {/* <Form.Item>
         <Form.Item name="remember" valuePropName="checked" noStyle>
           <Checkbox>{'Remember me'}</Checkbox>
         </Form.Item>
         <a className="login-form-forgot" href="/forgetpassword" style={{ marginLeft: '0px' }}>
           {'Forgot password'}
         </a>
-      </Form.Item>
+      </Form.Item> */}
           </div>
           <Form.Item>
             <Button

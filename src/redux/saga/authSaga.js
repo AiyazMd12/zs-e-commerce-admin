@@ -4,6 +4,12 @@ import {
   SIGNUP_REQUEST,
   signupSuccess,
   signupFailure,
+  SIGNUP_OTP_REQUEST,
+  signupOtpSuccess,
+  signupOtpFailure,
+  LOGIN_OTP_REQUEST,
+  loginOtpSuccess,
+  loginOtpFailure,
   LOGIN_REQUEST,
   loginSuccess,
   loginFailure,
@@ -23,8 +29,8 @@ function* signupSaga(action) {
       isAdmin : true
     };
     const response = yield call(axios.post, `${API_BASE_URL}/signup`, payload);
-    if (response?.data?.user) {
-      yield put(signupSuccess(response.data.user));
+    if (response?.data) {
+      yield put(signupSuccess(response.data));
     } else {
       throw new Error('No user data in response');
     }
@@ -35,20 +41,60 @@ function* signupSaga(action) {
   }
 }
 
+
+function* signupOtpSaga(action) {
+  try {
+    // Correct payload (fix typo: emial -> email)
+    const payload = {
+      ...action.payload,
+    };
+    const response = yield call(axios.post, `${API_BASE_URL}/signup/verify`, payload);
+    if (response?.data) {
+      yield put(signupOtpSuccess(response.data));
+    } else {
+      throw new Error('OTP Not verified');
+    }
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || error.message || 'Verification failed';
+    yield put(signupOtpFailure(errorMessage));
+  }
+}
+
 // Login API call
 function* loginSaga(action) {
+  let payload = action.payload?.loginData
   try {
-    const response = yield call(axios.post, `${API_BASE_URL}/user/signIn`, action.payload);
+    const response = yield call(axios.post, `${API_BASE_URL}/user/signIn`, payload);
     if(response?.data){
-      yield put(loginSuccess(response.data.user));
+      yield put(loginSuccess(response.data));
       try{
-        yield put(loginSuccess(response.data.user));
+        yield put(loginSuccess(response.data));
       }catch(error){
         yield put(loginFailure(error.response?.data?.message || 'Signup failed'));
       }
     }
   } catch (error) {
     yield put(loginFailure(error.response?.data?.message || 'Login failed'));
+  }
+}
+
+function* loginOtpSaga(action) {
+  try {
+    // Correct payload (fix typo: emial -> email)
+    const payload = {
+      ...action.payload,
+    };
+    const response = yield call(axios.post, `${API_BASE_URL}/signIn/verify`, payload);
+    if (response?.data) {
+      yield put(loginOtpSuccess(response.data));
+    } else {
+      throw new Error('OTP Not verified');
+    }
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || error.message || 'Verification failed';
+    yield put(loginOtpFailure(errorMessage));
   }
 }
 
@@ -64,6 +110,8 @@ function* logoutSaga() {
 
 function* authSaga() {
   yield takeEvery(SIGNUP_REQUEST, signupSaga);
+  yield takeEvery(SIGNUP_OTP_REQUEST,signupOtpSaga);
+  yield takeEvery(LOGIN_OTP_REQUEST,loginOtpSaga);
   yield takeEvery(LOGIN_REQUEST, loginSaga);
   yield takeEvery(LOGOUT, logoutSaga);
 }
